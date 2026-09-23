@@ -10,7 +10,7 @@ if [ $(id -u) -eq 0 ]; then
 	else
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p $pass $username
-		[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+		[ $? -eq 0 ] && echo "Compte cree correctement." || echo "Erreur lors de la creation du compte."
 	fi
 else
 	echo "Only root may add a user to the system"
