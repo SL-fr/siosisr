@@ -1,6 +1,6 @@
 # Project SIOSISR
 
-[README.md](https://github.com/user-attachments/files/33148978/README.md)
+[README.md](https://github.com/user-attachments/files/33149421/README.md)
 # TP PfSense / Addon
 
 Package de monitoring, bureau à distance via NAT et serveur web en DMZ
@@ -18,7 +18,7 @@ L’ensemble a été reproduit dans un laboratoire virtuel sous Proxmox. Ce comp
 
 ## 2.1 Schéma réseau
 
-![image.png](image.png)
+![image.png](images/image.png)
 
 *Figure 1 — Schéma de l’infrastructure (WAN, LAN, DMZ) et redirections NAT*
 
@@ -42,13 +42,13 @@ L’ensemble a été reproduit dans un laboratoire virtuel sous Proxmox. Ce comp
 
 La VM pfSense possède trois cartes réseau VirtIO, chacune reliée à un bridge dédié :
 
-![image.png](image%201.png)
+![image.png](images/image%201.png)
 
 *Figure 2 — Cartes réseau de la VM pfSense : net0 sur vmbr0 (WAN), net1 sur lanvmbr1 (LAN), net2 sur dmzvmbr2 (DMZ)*
 
 Les bridges lanvmbr1 et dmzvmbr2
 
-![image.png](image%202.png)
+![image.png](images/image%202.png)
 
 # 3. Installation de pfSense
 
@@ -56,11 +56,11 @@ Les bridges lanvmbr1 et dmzvmbr2
 
 La VM démarre sur l’ISO Netgate. Le menu de démarrage s’affiche, puis l’installeur demande d’accepter la licence.
 
-![image.png](image%203.png)
+![image.png](images/image%203.png)
 
 *Figure 3 — Menu de démarrage de l’ISO pfSense*
 
-![image.png](image%204.png)
+![image.png](images/image%204.png)
 
 *Figure 4 — Acceptation de la licence (Accept)*
 
@@ -68,15 +68,15 @@ La VM démarre sur l’ISO Netgate. Le menu de démarrage s’affiche, puis l’
 
 L’installeur demande de configurer les interfaces WAN et LAN. Le WAN est laissé en DHCP afin de disposer d’un accès à Internet pendant l’installation. Le LAN est configuré en adresse statique, sans serveur DHCP.
 
-![image.png](image%205.png)
+![image.png](images/image%205.png)
 
 *Figure 5 — WAN (vtnet0) : mode DHCP client*
 
-![image.png](image%206.png)
+![image.png](images/image%206.png)
 
 *Figure 6 — LAN (vtnet1) : statique 192.168.10.1/24, DHCP désactivé*
 
-![image.png](image%207.png)
+![image.png](images/image%207.png)
 
 *Figure 7 — Confirmation de l’assignation des interfaces (WAN = vtnet0, LAN = vtnet1)*
 
@@ -84,11 +84,11 @@ L’installeur demande de configurer les interfaces WAN et LAN. Le WAN est laiss
 
 L’installeur propose d’abord pfSense Plus, qui nécessite un abonnement actif. Aucun abonnement n’étant disponible, c’est l’édition gratuite pfSense CE (Community Edition) qui est installée, dans sa version stable la plus récente, la 2.9.0.
 
-![image.png](image%208.png)
+![image.png](images/image%208.png)
 
 *Figure 8 — Validation de l’abonnement : choix de « Install CE »*
 
-![image.png](image%209.png)
+![image.png](images/image%209.png)
 
 *Figure 9 — Choix de la version : 2.9.0 (Current Stable Version)*
 
@@ -96,7 +96,7 @@ L’installeur propose d’abord pfSense Plus, qui nécessite un abonnement acti
 
 À la fin de l’installation, le lecteur CD/DVD de la VM est éjecté dans Proxmox (Hardware > CD/DVD Drive > Do not use any media) puis la VM redémarre. La console affiche le menu de pfSense avec le WAN en DHCP (192.168.20.77) et le LAN en 192.168.10.1.
 
-![image.png](image%2010.png)
+![image.png](images/image%2010.png)
 
 *Figure 10 — Menu de la console pfSense après le premier démarrage*
 
@@ -107,15 +107,15 @@ L’installeur ne gère que le WAN et le LAN. La troisième interface (vtnet2) e
 1. **Option 1 (Assign Interfaces) :** VLAN : non ; WAN = vtnet0 ; LAN = vtnet1 ; Optional 1 = vtnet2 ; confirmation par « y ».
 2. **Option 2 (Set interface(s) IP address) :** interface OPT1, IPv4 par DHCP : non, adresse 172.16.10.1, masque 24, pas de passerelle, IPv6 : non, serveur DHCP : non, retour en HTTP : non.
 
-![image.png](image%2011.png)
+![image.png](images/image%2011.png)
 
 *Figure 11 — Assignation de OPT1 sur vtnet2*
 
-![image.png](image%2012.png)
+![image.png](images/image%2012.png)
 
 *Figure 12 — Configuration de l’adresse IPv4 de OPT1 : 172.16.10.1/24*
 
-![image.png](image%2013.png)
+![image.png](images/image%2013.png)
 
 *Figure 13 — Console avec les trois interfaces : WAN, LAN et DMZ (OPT1)*
 
@@ -125,11 +125,11 @@ Le client Debian du LAN (192.168.10.10) accède à l’interface web par https:/
 
 *Figure 14 — Page de connexion de pfSense depuis le client LAN*
 
-![image.png](image%2014.png)
+![image.png](images/image%2014.png)
 
 *Figure 15 — Tableau de bord : pfSense CE 2.9.0, interfaces WAN 192.168.20.77, LAN 192.168.10.1 et DMZ 172.16.10.1*
 
-![image.png](image%2015.png)
+![image.png](images/image%2015.png)
 
 # 4. Configuration du pare-feu
 
@@ -139,13 +139,13 @@ Le WAN est situé sur un réseau privé (192.168.20.0/24). Par défaut, pfSense 
 
 L’option « Block bogon networks » est laissée activée : les bogons sont des plages non attribuées par l’IANA, ce qui ne concerne pas 192.168.20.0/24. Cette règle apparaît toujours dans les règles du WAN (voir la figure de la section 6.3) et elle ne gêne pas les tests.
 
-![image.png](image%2016.png)
+![image.png](images/image%2016.png)
 
 ## 4.2 Règles du LAN
 
 Les règles par défaut sont conservées : la règle anti-verrouillage et l’autorisation de tout le trafic du LAN (IPv4 et IPv6).
 
-![image.png](image%2017.png)
+![image.png](images/image%2017.png)
 
 *Figure 16 — Règles de l’interface LAN*
 
@@ -163,11 +163,11 @@ Par défaut une interface optionnelle ne laisse rien passer. Une règle est ajou
 | Destination | LAN subnets avec « Invert match » (tout sauf le LAN) |
 | Description | DMZ vers Internet, LAN interdit |
 
-![image.png](image%2018.png)
+![image.png](images/image%2018.png)
 
 *Figure 17 — Formulaire de la règle DMZ*
 
-![image.png](image%2019.png)
+![image.png](images/image%2019.png)
 
 *Figure 18 — Règle appliquée sur l’interface DMZ (Apply Changes)*
 
@@ -177,7 +177,7 @@ Depuis le client Debian, un ping vers 8.8.8.8 aboutit : le LAN accède à Intern
 
 ping 8.8.8.8
 
-![image.png](image%2020.png)
+![image.png](images/image%2020.png)
 
 *Figure 19 — Ping du client LAN vers 8.8.8.8 : 5 paquets reçus sur 5*
 
@@ -202,7 +202,7 @@ Le DSI veut consulter via un navigateur le maximum d’informations sur le LAN. 
 
 System > Package Manager > Available Packages, recherche de « ntopng », puis Install et Confirm.
 
-![image.png](image%2021.png)
+![image.png](images/image%2021.png)
 
 *Figure 20 — ntopng 6.2.0_7 installé et ses dépendances (Installed Packages)*
 
@@ -218,7 +218,7 @@ La configuration se fait dans Diagnostics > ntopng Settings. Enable ntopng est c
 | DNS Mode | Decode DNS responses and resolve all numeric IPs |
 | Additional Local Networks | 192.168.10.0/24 et 172.16.10.0/24 |
 
-![image.png](image%2022.png)
+![image.png](images/image%2022.png)
 
 *Figure 21 — Page Diagnostics > ntopng Settings*
 
@@ -226,7 +226,7 @@ La configuration se fait dans Diagnostics > ntopng Settings. Enable ntopng est c
 
 Depuis le client LAN, ntopng est accessible sur https://192.168.10.1:3000 (compte admin). Le navigateur affiche un avertissement car le certificat de pfSense est auto-signé. Il est attendu dans un environnement de test et il suffit de choisir « Continuer ». En production, un certificat émis par une autorité de confiance serait installé.
 
-![image.png](image%2023.png)
+![image.png](images/image%2023.png)
 
 *Figure 22 — Avertissement de certificat auto-signé (SEC_ERROR_SELF_SIGNED_CERT)*
 
@@ -236,19 +236,19 @@ Du trafic est généré depuis le client LAN (ping, navigation, consultation de 
 
 ping 8.8.8.8
 
-![image.png](image%2024.png)
+![image.png](images/image%2024.png)
 
 *Figure 23 — Trafic généré depuis le client LAN*
 
-![image.png](image%2025.png)
+![image.png](images/image%2025.png)
 
 *Figure 24 — Tableau de bord ntopng : flux principaux, hôtes, applications et classification du trafic*
 
-![image.png](image%2026.png)
+![image.png](images/image%2026.png)
 
 *Figure 25 — Onglet Hosts : le client 192.168.10.10, pfSense (pfsense.lsl.local) et 8.8.8.8 (dns.google)*
 
-![image.png](image%2027.png)
+![image.png](images/image%2027.png)
 
 *Figure 26 — Onglet Flows : connexions actives sur l’interface vtnet1 (LAN)*
 
@@ -260,13 +260,13 @@ ntopng détecte le client, les serveurs contactés, les protocoles (TLS, DNS, IC
 
 Le serveur Windows est connecté au bridge dmzvmbr2, avec une adresse fixe dans la DMZ : 172.16.10.20, passerelle 172.16.10.1 (pfSense), DNS 172.16.10.1.
 
-![image.png](image%2028.png)
+![image.png](images/image%2028.png)
 
 *Figure 27 — Propriétés IPv4 du serveur Windows*
 
 Le bureau à distance est activé dans les propriétés système (Utilisation à distance), avec l’option d’authentification NLA laissée cochée. Le compte Administrateur est utilisé pour la connexion.
 
-![image.png](image%2029.png)
+![image.png](images/image%2029.png)
 
 *Figure 28 — Activation du bureau à distance sur le serveur*
 
@@ -289,17 +289,17 @@ Firewall > NAT > Port Forward > Add, avec les paramètres suivants, puis Save et
 | Description | RDP vers WS DMZ |
 | Filter rule association | Add associated filter rule |
 
-![image.png](image%2030.png)
+![image.png](images/image%2030.png)
 
 *Figure 29 — Formulaire de la redirection de port RDP*
 
-![image.png](image%2031.png)
+![image.png](images/image%2031.png)
 
 *Figure 30 — Règle de redirection créée (Port Forward)*
 
 La règle de pare-feu associée est générée automatiquement sur le WAN : elle autorise le TCP vers 172.16.10.20 sur le port 3389. La règle « Block bogon networks » reste active, mais elle ne gêne pas le test puisque 192.168.20.0/24 est un réseau privé et non un bogon.
 
-![image.png](image%2032.png)
+![image.png](images/image%2032.png)
 
 *Figure 31 — Règles de l’interface WAN, dont la règle associée à la redirection RDP*
 
@@ -309,19 +309,19 @@ La validation est faite depuis le PC physique (192.168.20.108), qui se trouve c�
 
 Test-NetConnection 192.168.20.77 -Port 33890
 
-![image.png](image%2033.png)
+![image.png](images/image%2033.png)
 
 *Figure 32 — Test du port 33890 : TcpTestSucceeded = True*
 
 La connexion RDP est ensuite lancée avec mstsc, en saisissant 192.168.20.77:33890. Le serveur présente un certificat auto-signé (nom WIN-LDGBL85QQVS), ce qui provoque un avertissement attendu.
 
-![image.png](image%2034.png)
+![image.png](images/image%2034.png)
 
 *Figure 33 — Avertissement de certificat lors de la connexion RDP*
 
 La session s’ouvre sur le serveur. La commande ipconfig exécutée dans la session confirme qu’il s’agit bien du serveur de la DMZ (172.16.10.20, passerelle 172.16.10.1). Le ping vers le LAN (192.168.10.10) depuis ce serveur échoue, ce qui confirme l’isolation de la DMZ.
 
-![image.png](image%2035.png)
+![image.png](images/image%2035.png)
 
 *Figure 34 — Session RDP ouverte depuis 192.168.20.77:33890 : ipconfig affiche 172.16.10.20*
 
@@ -340,7 +340,7 @@ Le serveur est un conteneur Proxmox basé sur le modèle TurnKey LAMP, nommé LA
 | Passerelle | 172.16.10.1 (pfSense) |
 | Firewall Proxmox | Désactivé |
 
-![image.png](image%2036.png)
+![image.png](images/image%2036.png)
 
 *Figure 35 — Configuration de la carte réseau du conteneur LAMP-DMZ*
 
@@ -365,7 +365,7 @@ ping 192.168.10.10
 | ping 8.8.8.8 | Réponse (0 % de perte) | La DMZ accède à Internet (règle DMZ et NAT sortant) |
 | ping 192.168.10.10 | 100 % de perte | La DMZ ne peut pas joindre le LAN (règle d’isolation) |
 
-![image.png](image%2037.png)
+![image.png](images/image%2037.png)
 
 *Figure 36 — Tests réseau depuis LAMP-DMZ*
 
@@ -375,17 +375,17 @@ systemctl status apache2
 
 Apache est actif (running) et activé au démarrage (enabled).
 
-![image.png](image%2038.png)
+![image.png](images/image%2038.png)
 
 *Figure 37 — Statut du service apache2*
 
-![image.png](image%2039.png)
+![image.png](images/image%2039.png)
 
 ## 7.4 Accès depuis le LAN
 
 La règle par défaut du LAN autorise le trafic vers la DMZ. Depuis le client Debian, la page d’accueil TurnKey LAMP s’affiche sur http://172.16.10.10.
 
-![image.png](image%2040.png)
+![image.png](images/image%2040.png)
 
 *Figure 38 — Page TurnKey LAMP vue depuis le client LAN*
 
@@ -401,13 +401,13 @@ Pour rendre le serveur web accessible depuis l’extérieur, une seconde redirec
 | Redirect target port | 80 (HTTP) |
 | Filter rule association | Add associated filter rule |
 
-![image.png](image%2041.png)
+![image.png](images/image%2041.png)
 
 *Figure 39 — Redirection du port 80 vers le serveur LAMP*
 
 Depuis le PC physique, l’adresse http://192.168.20.77 affiche la page du serveur LAMP de la DMZ, ce qui valide la redirection.
 
-![image.png](image%2042.png)
+![image.png](images/image%2042.png)
 
 *Figure 40 — Page TurnKey LAMP vue depuis le PC physique via l’adresse WAN de pfSense*
 
@@ -453,6 +453,6 @@ En cas de perte du mot de passe, le compte admin peut être réinitialisé depui
 2. Confirmer par « y ».
 3. Saisir puis confirmer un nouveau mot de passe, puis se reconnecter sur https://192.168.10.1
 
-![image.png](image%2043.png)
+![image.png](images/image%2043.png)
 
 *Figure 41 — Console pfSense : option 3, réinitialisation du compte admin*
